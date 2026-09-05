@@ -1,87 +1,84 @@
 "use client";
 
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 
+type HistoricoItem = {
+  ano: number;
+  valor: number | null;
+  percentual: number | null;
+};
+
 type ChartProps = {
-  valor: number;
-  limiteAlerta: number;
-  limitePrudencial: number;
-  limiteMaximo: number;
+  historico: HistoricoItem[];
 };
 
 export default function Chart({
-  valor,
-  limiteAlerta,
-  limitePrudencial,
-  limiteMaximo,
+  historico,
 }: ChartProps) {
-  const dados = [
-    {
-      nome: "DTP",
-      valor: valor,
-    },
-    {
-      nome: "Alerta",
-      valor: limiteAlerta,
-    },
-    {
-      nome: "Prudencial",
-      valor: limitePrudencial,
-    },
-    {
-      nome: "Máximo",
-      valor: limiteMaximo,
-    },
-  ];
+  const dados = historico
+    .filter(
+      (item) =>
+        item.valor !== null
+    )
+    .map((item) => ({
+      ano: item.ano,
+      valor: item.valor,
+    }));
 
   return (
     <div className="w-full h-96">
+
       <ResponsiveContainer
         width="100%"
         height="100%"
       >
-        <BarChart data={dados}>
+        <LineChart data={dados}>
 
           <CartesianGrid strokeDasharray="3 3" />
 
-          <XAxis dataKey="nome" />
+          <XAxis
+            dataKey="ano"
+          />
 
           <YAxis
-            unit="%"
-            domain={[0, 60]}
+            tickFormatter={(valor) =>
+              `R$ ${(Number(valor) / 1_000_000).toFixed(0)} mi`
+            }
           />
 
           <Tooltip
             formatter={(valor) => [
-              `${Number(valor).toLocaleString(
+              Number(valor).toLocaleString(
                 "pt-BR",
                 {
-                  minimumFractionDigits: 2,
+                  style: "currency",
+                  currency: "BRL",
                   maximumFractionDigits: 2,
                 }
-              )}%`,
-              "Percentual",
+              ),
+              "Despesa com pessoal",
             ]}
           />
 
-          <Legend />
-
-          <Bar
+          <Line
+            type="monotone"
             dataKey="valor"
-            name="Percentual"
+            stroke="currentColor"
+            strokeWidth={3}
+            dot
           />
 
-        </BarChart>
+        </LineChart>
       </ResponsiveContainer>
+
     </div>
   );
 }
