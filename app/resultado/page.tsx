@@ -334,6 +334,22 @@ export default function Resultado() {
           Consulta: {consulta}
         </p>
 
+        {dados && (
+          <a
+            href={
+              `/api/siconfi/exportar-planilha` +
+              `?id_ente=${encodeURIComponent(idEnte)}` +
+              `&anoInicial=2019` +
+              `&anoFinal=${encodeURIComponent(exercicio)}` +
+              `&periodo=${encodeURIComponent(periodo)}`
+            }
+            download
+            className="inline-block mb-8 bg-white text-black px-5 py-3 rounded-xl font-medium hover:bg-gray-200 transition"
+          >
+            Baixar planilha preenchida (.xlsx)
+          </a>
+        )}
+
         {carregando && (
           <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
             <p className="text-gray-400">
